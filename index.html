@@ -10874,90 +10874,78 @@
   "TARIFA": "MILLA VERDE FAMILIAR DORSAL ORO"
  }
 ]  // Normaliza el texto para la búsqueda
-  function normalizarTexto(texto) {
+ function normalizarTexto(texto) {
     return texto
       .toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita acentos
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
       .trim();
   }
 
-  // Búsqueda en vivo
-  document.getElementById("busqueda").addEventListener("input", function () {
-    let filtro = normalizarTexto(this.value);
-
-    if (filtro === "") {
-      document.getElementById("lista").innerHTML = "";
-      document.getElementById("resultado").innerHTML = "";
-      return;
-    }
-
-    let resultados = datos.filter(p =>
-      normalizarTexto(p.NOMBRE).includes(filtro) ||
-      normalizarTexto(p.APELLIDOS).includes(filtro)
-    );
-
-    mostrarResultados(resultados);
-  });
-
-  // Limpiar búsqueda
-  document.getElementById("limpiarBtn").addEventListener("click", function () {
-    document.getElementById("busqueda").value = "";
-    document.getElementById("lista").innerHTML = "";
-    document.getElementById("resultado").innerHTML = "";
-  });
-
-  // Mostrar lista de coincidencias
+  // Mostrar lista de resultados
   function mostrarResultados(resultados) {
     let lista = document.getElementById("lista");
     lista.innerHTML = "";
 
     if (resultados.length === 0) {
-      lista.innerHTML = "<div>No hay coincidencias</div>";
-      document.getElementById("resultado").innerHTML = "";
+      lista.innerHTML = "<div>No se encontraron resultados</div>";
       return;
     }
 
-    resultados.forEach(p => {
+    resultados.forEach(item => {
       let div = document.createElement("div");
-      div.textContent = p.NOMBRE + " " + p.APELLIDOS;
-      div.addEventListener("click", function () {
-        mostrarDetalle(p);
-      });
+      div.textContent = `${item.DORSAL} - ${item.NOMBRE} ${item.APELLIDOS}`;
+      div.onclick = function () {
+        mostrarDetalle(item);
+      };
       lista.appendChild(div);
     });
   }
 
-  // Mostrar detalle de un participante y borrar la lista
-  function mostrarDetalle(p) {
-    document.getElementById("lista").innerHTML = ""; 
-    document.getElementById("busqueda").value = "";  
+  // Mostrar detalle completo
+function mostrarDetalle(item) {
+  let resultado = document.getElementById("resultado");
 
-    let resultado = document.getElementById("resultado");
+  let filas = `
+    <tr><th>Dorsal</th><td>${item.DORSAL}</td></tr>
+    <tr><th>Nombre</th><td>${item.NOMBRE}</td></tr>
+    <tr><th>Apellidos</th><td>${item.APELLIDOS}</td></tr>
+    <tr><th>Tarifa</th><td>${item.TARIFA}</td></tr>
+    <tr><th>Camiseta oficial</th><td>${item["CAMISETA OFICIAL"] || ""}</td></tr>
+    <tr><th>Cajón de salida</th><td>${item["CAJÓN DE SALIDA"] || ""}</td></tr>
+  `;
 
-    // Campos a mostrar con etiquetas legibles
-    let campos = {
-      "NOMBRE": "Nombre",
-      "APELLIDOS": "Apellidos",
-      "DORSAL": "Dorsal",
-      "TARIFA": "Tarifa",
-      "CAMISETA OFICIAL": "Camiseta oficial",
-      "CAMISETA OFICIAL EXTRA": "Camiseta oficial extra",
-      "CAJÓN DE SALIDA": "Cajón de salida"
-    };
-
-    // Construcción dinámica de la tabla
-    let tabla = "<table>";
-    for (let clave in campos) {
-      if (p[clave] && p[clave].toString().trim() !== "") {
-        tabla += `<tr><th>${campos[clave]}</th><td>${p[clave]}</td></tr>`;
-      }
-    }
-    tabla += "</table>";
-
-    resultado.innerHTML = tabla;
+  // Solo añadir "Camiseta oficial extra" si tiene valor
+  if (item["CAMISETA OFICIAL EXTRA"] && item["CAMISETA OFICIAL EXTRA"].trim() !== "") {
+    filas += `<tr><th>Camiseta oficial extra</th><td>${item["CAMISETA OFICIAL EXTRA"]}</td></tr>`;
   }
+
+  resultado.innerHTML = `<table>${filas}</table>`;
+
+  // Limpiar la lista cuando se selecciona un participante
+  document.getElementById("lista").innerHTML = "";
+}
+
+  // Buscar al escribir
+  document.getElementById("busqueda").addEventListener("input", function () {
+    let consulta = normalizarTexto(this.value);
+    let palabras = consulta.split(/\s+/).filter(Boolean);
+
+    let resultados = datos.filter(item => {
+      let nombreCompleto = normalizarTexto(item.NOMBRE + " " + item.APELLIDOS);
+      return palabras.every(p => nombreCompleto.includes(p));
+    });
+
+    mostrarResultados(resultados);
+  });
+
+  // Botón limpiar
+  document.getElementById("limpiarBtn").addEventListener("click", function () {
+    document.getElementById("busqueda").value = "";
+    document.getElementById("lista").innerHTML = "";
+    document.getElementById("resultado").innerHTML = "";
+  });
 </script>
 
 </body>
-
 </html>
