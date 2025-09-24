@@ -2,30 +2,92 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Búsqueda Nombre + Apellidos</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 15px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    h3 {
+      font-size: 1rem;
+      margin: 10px 0;
+    }
+    .busqueda-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005fa3;
     }
     #lista div {
       cursor: pointer;
-      padding: 5px;
+      padding: 12px;
       border-bottom: 1px solid #ddd;
+      background: white;
     }
     #lista div:hover {
       background-color: #f0f0f0;
     }
-    table {
+    /* Resultado en tarjetas para móvil */
+    #resultado {
       margin-top: 15px;
+    }
+    table {
+      width: 100%;
       border-collapse: collapse;
     }
     th, td {
-      padding: 5px 10px;
-      border: 1px solid #999;
+      padding: 8px;
+      border: 1px solid #ccc;
+      text-align: left;
+      font-size: 0.9rem;
     }
-    button {
-      margin-left: 10px;
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      tr {
+        margin-bottom: 12px;
+        background: white;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      }
+      td {
+        border: none;
+        padding: 6px 0;
+      }
+      td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 2px;
+      }
     }
   </style>
 </head>
@@ -35,15 +97,17 @@
 
 <h3>Buscar participante (nombre y apellidos):</h3>
 
-<input type="text" id="busqueda" placeholder="Escribe nombre y/o apellidos" />
-<button id="limpiarBtn">Limpiar</button>
+<div class="busqueda-container">
+  <input type="text" id="busqueda" placeholder="Escribe nombre y/o apellidos" />
+  <button id="limpiarBtn">Limpiar</button>
+</div>
 
-<div id="lista" style="margin-top: 10px; max-height: 200px; overflow-y: auto;"></div>
+<div id="lista" style="max-height: 200px; overflow-y: auto;"></div>
 <hr />
 <div id="resultado"></div>
 
 <script>
-  // Datos embebidos directamente
+   // Datos embebidos directamente
   let datos = [
  {
   "NOMBRE": "Álvaro",
@@ -12168,9 +12232,8 @@ function mostrarDetalle(item) {
     document.getElementById("lista").innerHTML = "";
     document.getElementById("resultado").innerHTML = "";
   });
+
 </script>
 
 </body>
-
 </html>
-
