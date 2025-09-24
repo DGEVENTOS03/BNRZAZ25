@@ -12201,7 +12201,7 @@ function mostrarDetalle(item) {
 
   // Solo añadir "Camiseta oficial" si tiene valor
   if (item["CAMISETA OFICIAL"] && item["CAMISETA OFICIAL"].trim() !== "") {
-    filas += `<tr><th>Camiseta oficial extra</th><td>${item["CAMISETA OFICIAL"]}</td></tr>`;
+    filas += `<tr><th>Camiseta oficial</th><td>${item["CAMISETA OFICIAL"]}</td></tr>`;
   }
 
   resultado.innerHTML = `<table>${filas}</table>`;
